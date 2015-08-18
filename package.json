@@ -6,7 +6,6 @@
   "author": "Jeremy Sher <OverlappingElvis@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "get-stdin": "^4.0.1",
     "q": "^1.4.1",
     "underscore": "^1.8.3"
   },
