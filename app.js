@@ -59,10 +59,10 @@ var transformFile = function(file) {
 		.join()
 		.split(delimiter);
 	var joined = _(groups).map(function(group) {
-			var join = _(group.split(',')).compact();
-			join.splice(1, 1);
-			return join[0] + ',' + _(join).rest().join(' ');
-		});
+		var join = _(group.split(',')).compact();
+		join.splice(1, 1);
+		return join[0] + ',' + _(join).rest().join(' ');
+	});
 	return joined.join(os.EOL);
 };
 
