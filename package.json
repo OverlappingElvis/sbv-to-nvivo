@@ -1,11 +1,12 @@
 {
   "name": "sbv-to-nvivo",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "app.js",
   "author": "Jeremy Sher <OverlappingElvis@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "normalize-newline": "^1.0.2",
     "q": "^1.4.1",
     "underscore": "^1.8.3"
   },

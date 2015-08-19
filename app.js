@@ -4,16 +4,27 @@ var fs = require('fs');
 var q = require('q');
 var _ = require('underscore');
 var os = require('os');
+var normalize = require('normalize-newline');
 
 var delimiter = '<<<break>>>';
+var usage = 'sbv-to-nvivo <filename>.sbv to generate <filename>.txt';
 var inputFilename = process.argv[2];
 
 if (!inputFilename) {
-	console.log('sbv-to-nvivo <filename>.sbv to generate <filename>.txt');
+	console.log('No file provided.');
+	console.log(usage);
 	return;
 }
 
-var outputFilename = _(inputFilename.split('.sbv')).first() + '.txt';
+var splitFilename = inputFilename.split('.sbv');
+
+if (splitFilename.length !== 2) {
+	console.log('Invalid file extension.');
+	console.log(usage);
+	return;
+}
+
+var outputFilename = splitFilename[0] + '.txt';
 
 var readFile = function() {
 	var deferred = q.defer();
@@ -21,7 +32,7 @@ var readFile = function() {
 		if (err) {
 			deferred.reject(err);
 		}
-		deferred.resolve(data.toString());
+		deferred.resolve(normalize(data.toString()));
 	});
 	return deferred.promise;
 };
@@ -38,14 +49,17 @@ var writeFile = function(data) {
 };
 
 var transformFile = function(file) {
-	var groups = _(file.split('\r\n')).map(function(item) {
-		if (item === '') {
-			return delimiter;
-		}
-		return item;
-	}).join().split(delimiter);
+	var groups = _(file.split('\n'))
+		.map(function(item) {
+			if (item === '') {
+				return delimiter;
+			}
+			return item;
+		})
+		.join()
+		.split(delimiter);
 	var joined = _(groups).map(function(group) {
-			var join = _.compact(group.split(','));
+			var join = _(group.split(',')).compact();
 			join.splice(1, 1);
 			return join[0] + ',' + _(join).rest().join(' ');
 		});

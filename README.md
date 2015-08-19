@@ -18,6 +18,3 @@ Verify that the installation was successful by running `sbv-to-nvivo` from a com
     $ sbv-to-nvivo <filename>.sbv
 
 Produces a file named `<filename>.sbv`
-
-## Known Issues
-* Line breaks are not normalized and currently assume Windows format
