@@ -17,4 +17,4 @@ Verify that the installation was successful by running `sbv-to-nvivo` from a com
 ## Usage
     $ sbv-to-nvivo <filename>.sbv
 
-Produces a file named `<filename>.sbv`
+Produces a file named `<filename>.txt`
