@@ -15,6 +15,14 @@ On Windows, right-click the Command Prompt tool and select "Run as Administrator
 Verify that the installation was successful by running `sbv-to-nvivo` from a command prompt.
 
 ## Usage
-    $ sbv-to-nvivo <filename>.sbv
+    $ sbv-to-nvivo captions.sbv
 
-Produces a file named `<filename>.txt`
+Creates `captions1.txt`
+
+    $ sbv-to-nvivo captions1.sbv captions2.sbv
+
+Creates `captions1.txt` and `captions2.txt`
+
+    $ sbv-to-nvivo *.sbv
+
+Creates `<filename>.txt` for each `<filename>.sbv` in the current directory

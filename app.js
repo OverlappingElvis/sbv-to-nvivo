@@ -7,28 +7,19 @@ var os = require('os');
 var normalize = require('normalize-newline');
 
 var delimiter = '<<<break>>>';
-var usage = 'sbv-to-nvivo <filename>.sbv to generate <filename>.txt';
-var inputFilename = process.argv[2];
+var usage = 'Usage: sbv-to-nvivo [filenames]';
 
-if (!inputFilename) {
-	console.log('No file provided.');
+var filenames = _(process.argv).rest(2);
+
+if (!filenames.length) {
+	console.log('No files provided.');
 	console.log(usage);
 	return;
 }
 
-var splitFilename = inputFilename.split('.sbv');
-
-if (splitFilename.length !== 2) {
-	console.log('Invalid file extension.');
-	console.log(usage);
-	return;
-}
-
-var outputFilename = splitFilename[0] + '.txt';
-
-var readFile = function() {
+var readFile = function(filename) {
 	var deferred = q.defer();
-	fs.readFile(inputFilename, function(err, data) {
+	fs.readFile(filename, function(err, data) {
 		if (err) {
 			deferred.reject(err);
 		}
@@ -37,9 +28,9 @@ var readFile = function() {
 	return deferred.promise;
 };
 
-var writeFile = function(data) {
+var writeFile = function(data, filename) {
 	var deferred = q.defer();
-	fs.writeFile(outputFilename, data, function(err) {
+	fs.writeFile(filename, data, function(err) {
 		if (err) {
 			deferred.reject(err);
 		}
@@ -66,12 +57,25 @@ var transformFile = function(file) {
 	return joined.join(os.EOL);
 };
 
-readFile()
-	.then(transformFile)
-	.then(writeFile)
-	.then(function() {
-		console.log('Wrote ' + outputFilename);
-	})
-	.fail(function(err) {
-		throw err;
-	});
+var translateFile = function(filename) {
+	var splitFilename = filename.split('.sbv');
+
+	if (splitFilename.length !== 2) {
+		console.log('Invalid file extension.');
+		console.log(usage);
+		return;
+	}
+
+	var outputFilename = splitFilename[0] + '.txt';
+	return readFile(filename)
+		.then(transformFile)
+		.then(_(writeFile).partial(_, outputFilename))
+		.then(function() {
+			console.log('Wrote ' + outputFilename);
+		})
+		.fail(function(err) {
+			throw err;
+		});
+};
+
+_(filenames).each(translateFile);
