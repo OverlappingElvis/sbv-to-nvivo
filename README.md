@@ -2,7 +2,7 @@
 Transform YouTube .sbv files to NVivo .txt format.
 
 ## Installation
-sbv-to-nvivo works best when globally installed as is available an an npm package:
+sbv-to-nvivo should be installed as a global npm package:
 
     $ npm install -g sbv-to-nvivo
 
