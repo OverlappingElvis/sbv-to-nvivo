@@ -5,6 +5,7 @@ var q = require('q');
 var _ = require('underscore');
 var os = require('os');
 var normalize = require('normalize-newline');
+var glob = require('glob');
 
 var delimiter = '<<<break>>>';
 var usage = 'Usage: sbv-to-nvivo [filenames]';
@@ -23,7 +24,7 @@ var readFile = function(filename) {
 		if (err) {
 			deferred.reject(err);
 		}
-		deferred.resolve(normalize(data.toString()));
+		deferred.resolve(normalize(data.toString().replace(/^\s+|\s+$/g, '')));
 	});
 	return deferred.promise;
 };
@@ -49,11 +50,14 @@ var transformFile = function(file) {
 		})
 		.join()
 		.split(delimiter);
-	var joined = _(groups).map(function(group) {
-		var join = _(group.split(',')).compact();
-		join.splice(1, 1);
-		return join[0] + ',' + _(join).rest().join(' ');
-	});
+	var joined = _(groups).chain()
+		.compact()
+		.map(function(group) {
+			var join = _(group.split(',')).compact();
+			join.splice(1, 1);
+			return join[0] + ',' + _(join).rest().join(' ');
+		})
+		.value();
 	return joined.join(os.EOL);
 };
 
@@ -67,6 +71,7 @@ var translateFile = function(filename) {
 	}
 
 	var outputFilename = splitFilename[0] + '.txt';
+	
 	return readFile(filename)
 		.then(transformFile)
 		.then(_(writeFile).partial(_, outputFilename))
@@ -78,4 +83,14 @@ var translateFile = function(filename) {
 		});
 };
 
-_(filenames).each(translateFile);
+var translateAll = function(filenames) {
+	_(filenames).each(translateFile);
+};
+
+if (filenames.length === 1 && filenames[0].indexOf('*') !== -1) {
+	glob(filenames[0], function(err, filenames) {
+		translateAll(filenames);
+	});
+} else {
+	translateAll(filenames);
+}
